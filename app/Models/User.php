@@ -9,7 +9,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
@@ -23,6 +23,7 @@ class User extends Authenticatable
         'email',
         'password',
         'status',
+        'image',
     ];
 
     /**
@@ -44,18 +45,28 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function image()
+    public function friendshipInverse()
     {
-        return $this->morphOne(Image::class, 'imageable');
+        return $this->belongsToMany(User::class, FriendShip::class, 'user_id', 'friend_id')->withPivot('id');
     }
 
-    public function vote()
+    public function friendshipRevarse()
     {
-        return $this->hasOne(Vote::class);
+        return $this->belongsToMany(User::class, FriendShip::class, 'friend_id', 'user_id')->withPivot('id');
+    }
+
+    public function friendships()
+    {
+        return collect($this->friendshipInverse)->concat(collect($this->friendshipRevarse));
     }
 
     public function posts()
     {
         return $this->hasMany(Post::class);
+    }
+
+    public function profile_path()
+    {
+        return is_null($this->image) ? asset('images/profile_default.png') : asset('storage/' . $this->image);
     }
 }

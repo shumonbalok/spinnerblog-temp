@@ -187,16 +187,29 @@
             </div>
             <div class="collapse navbar-collapse" id="myNavbar">
                 <ul class="nav navbar-nav">
-                    <li class="active"><a href="/">Home</a></li>
-                    <li><a href="#">About</a></li>
-                    <li><a href="#">Projects</a></li>
-                    <li><a href="#">Contact</a></li>
+                    <li class="{{ Route::is('posts.*') && ! Request::getQueryString()  ? 'active' : '' }}"><a
+                            href="/">Home</a>
+                    </li>
+                    @auth
+                    <li class="{{ Route::is('posts.*') && Request::query('current_user_posts')  ? 'active' : '' }}"><a
+                            href="{{route('posts.index', ['current_user_posts' => auth()->id()])}}">My Posts</a></li>
+                    <li
+                        class="{{ Route::is('comments.*') && Request::query('current_user_comments')  ? 'active' : '' }}">
+                        <a href="{{route('comments.index', ['current_user_comments' => auth()->id()])}}">My Comments</a>
+                    <li class="{{ Route::is('friendships.*') && ! Request::getQueryString()  ? 'active' : '' }}">
+                        <a href="{{route('friendships.index')}}">My
+                            Friends</a>
+                    <li
+                        class="{{ Route::is('friendships.*') && Request::query('current_user_add_friends')  ? 'active' : '' }}">
+                        <a href="{{route('friendships.index', ['current_user_add_friends' => auth()->id()])}}">Add
+                            Friends</a>
+                    </li>
+                    @endauth
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     @auth
-                    <li><a href="#"><img
-                                src="{{is_null(auth()->user()->image) ? null : asset('storage/'.auth()->user()->image->image)}}"
-                                class="img-circle" alt="{{auth()->user()->name}}" style="width: 25px;">
+                    <li><a href="#"><img src="{{auth()->user()->profile_path()}}" class="img-circle"
+                                alt="{{auth()->user()->name}}" style="width: 25px;">
                             {{auth()->user()->name}}</a>
                     </li>
                     <li><a href="{{ route('logout') }}" onclick="event.preventDefault();
@@ -225,6 +238,17 @@
     <footer class="container-fluid text-center">
         <p>Footer Text</p>
     </footer>
+
+    <script>
+        function showPassword(id) {
+        var x = document.getElementById(id);
+            if (x.type === "password") {
+                x.type = "text";
+            } else {
+                x.type = "password";
+            }
+        } 
+    </script>
 
 </body>
 

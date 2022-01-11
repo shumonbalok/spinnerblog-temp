@@ -11,7 +11,7 @@ class PostController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth')->except(['index', 'show']);
+        // $this->middleware('auth');
     }
     /**
      * Display a listing of the resource.
@@ -20,10 +20,15 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Cache::remember('posts', 5000, function () {
-            return Post::with('user')->paginate(5);
-        });
-
+        if (auth()->check() && request()->query('current_user_posts')) {
+            if (auth()->id() != request()->query('current_user_posts')) {
+                abort(401, 'You are not authorize for this action!');
+            } else {
+                $posts = Post::where('user_id', auth()->id())->with('user')->latest()->paginate(5)->withQueryString();
+            }
+        } else {
+            $posts = Post::publish()->with('user')->latest()->paginate(5);
+        }
         return view('blogs.posts.index', compact('posts'));
     }
 
@@ -45,10 +50,10 @@ class PostController extends Controller
      */
     public function store(PostRequest $request)
     {
-        // $request->safe()->merge(['name' => 'Taylor Otwell']);
         $data = ['user_id' => auth()->id()] + $request->validated();
-        $post = Post::create($data)->refresh();
-        $this->saveImage($post);
+        $path = $this->saveImage($request);
+        $data['image'] = $path;
+        Post::create($data)->refresh();
         return redirect('/posts')->with('success', 'Post Created Successfull');
     }
 
@@ -58,15 +63,10 @@ class PostController extends Controller
      * @param  \App\Models\Post  $post
      */
 
-    private function saveImage($post)
+    private function saveImage($image)
     {
         if (request()->hasFile('image')) {
-            if (request()->isMethod('patch') &&  Storage::exists($post->image->image)) {
-                Storage::delete($post->image->image);
-                $post->image()->forceDelete();
-            }
-            $path  = request()->file('image')->store('posts');
-            $post->image()->create(['image' => $path]);
+            return request()->file('image')->store('posts');
         }
     }
 
@@ -90,6 +90,7 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {
+        $post->authorize();
         return view('blogs.posts.update', compact('post'));
     }
 
@@ -102,8 +103,16 @@ class PostController extends Controller
      */
     public function update(PostRequest $request, Post $post)
     {
-        $post->update($request->validated());
-        $this->saveImage($post->refresh());
+        $post->authorize();
+        $data = $request->validated();
+        if ($request->hasFile('image')) {
+            $request->file('image');
+            if (Storage::exists($post->image)) {
+                Storage::delete($post->image);
+            }
+            $data['image'] = $request->file('image')->store('posts');
+        }
+        $post->update($data);
         return redirect('/posts')->with('success', 'Updated successfull');
     }
 
@@ -115,7 +124,7 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
-        $post->image()->delete();
+        $post->authorize();
         $post->delete();
         return redirect('/posts')->with('success', 'Deleted successfull');
     }

@@ -19,7 +19,7 @@ class CommentFactory extends Factory
             'user_id' => User::all()->random()->id,
             'post_id' => Post::all()->random()->id,
             'body' => $this->faker->text(80),
-            'status' => true
+            'status' => 1
         ];
     }
 }

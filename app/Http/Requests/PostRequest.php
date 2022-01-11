@@ -24,11 +24,10 @@ class PostRequest extends FormRequest
     public function rules()
     {
         return [
-            'title' => 'required|max:100|min:5',
-            'dscp' => 'required|max:400|min:40',
-            'status' => 'required|boolean',
-            // 'image' => 'required|mimes:jpg,png|max:2048',
-            'image' => [request()->isMethod('post') ? 'required' : '', 'mimes:jpg,png', 'max:2048'],
+            'title' => ['required', 'max:100', 'min:5'],
+            'description' => ['required', 'max:500', 'min:40'],
+            'status' => ['required'],
+            'image' => ['mimes:jpg,png', 'max:2048'],
         ];
     }
 }

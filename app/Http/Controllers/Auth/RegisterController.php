@@ -50,11 +50,14 @@ class RegisterController extends Controller
      */
     protected function validator(array $data)
     {
+        $pattern = 'regex:/[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};:"\\|,.<>\/?]{1}$/';
+        // 'regex:/[a-z]{1}[A-Z]{1}[0-9]{2}/',
+
         return Validator::make($data, [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'image' => ['required', 'mimes:jpg,bmp,png', 'max:1024'],
+            'password' => ['required', 'string', 'max:4', 'min:4', 'regex:/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@_$%^&*-]).{4,}$/', 'confirmed'],
+            'image' => ['mimes:jpg,bmp,png', 'max:1024'],
         ]);
     }
 
@@ -66,18 +69,14 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
+        if (request()->hasFile('image')) {
+            $path = request()->file('image')->store('profiles');
+        }
         return $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
+            'image' => $path ?? null,
         ]);
-    }
-
-    protected function registered(Request $request, $user)
-    {
-        if ($request->hasFile('image')) {
-            $path  = $request->file('image')->store('profiles');
-            $user->image()->create(['image' => $path]);
-        }
     }
 }

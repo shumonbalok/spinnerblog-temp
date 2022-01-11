@@ -16,24 +16,36 @@
 
             <div class="thumbnail">
                 <div class="caption">
+                    @if ($post->image)
                     <div class="position-relative">
-                        <img src="{{is_null($post->image) ? null : asset('storage/'. $post->image->image)}}"
-                            style="height: 130px;" />
+                        <img src="{{$post->banner_path()}}" style="width: 748px;" />
                     </div>
+                    @endif
+
                     <h4 id="thumbnail-label"><a href="{{route('posts.show',$post)}}">{{$post->title}}</a></h4>
-                    <p><img src="{{is_null($post->user->image) ? null : asset('storage/'.$post->user->image->image)}}"
-                            class="img-circle" alt="{{$post->user->name}}" style="width: 25px;">&nbsp;
+                    <p><img src="{{$post->user->profile_path()}}" class="img-circle" alt="{{$post->user->name}}"
+                            style="width: 25px;">&nbsp;
                         &nbsp;{{$post->user->name}}
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        <span class="date sub-text">{{$post->created_at->diffForHumans()}}</span>
                     </p>
                     <div class="thumbnail-description smaller">{{$post->excerpt(150)}}</div>
                 </div>
                 @if (auth()->id() == $post->user->id)
                 <div class="caption card-footer text-center">
                     <ul class="list-inline">
+                        @if(request()->query('current_user_posts') && $post->status == 0)
+                        <li><a class="btn btn-default btn-sm" href="{{route('posts.edit', $post)}}">Status: Pending</a>
+                        </li>
+                        @endif
+                        @if(request()->query('current_user_posts') && $post->status == 1)
+                        <li><a class="btn btn-default btn-sm" href="{{route('posts.edit', $post)}}">Status: Publish</a>
+                        </li>
+                        @endif
                         <li><a class="btn btn-default btn-sm" href="{{route('posts.edit', $post)}}">Update</a></li>
                         <li><a class="btn btn-danger btn-sm" href="" onclick="event.preventDefault();
-                            document.getElementById('delete-form').submit();">Delete</a></li>
-                        <form id="delete-form" action="{{ route('posts.destroy', $post) }}" method="POST"
+                            document.getElementById('delete-form-{{$post->id}}').submit();">Delete</a></li>
+                        <form id="delete-form-{{$post->id}}" action="{{ route('posts.destroy', $post) }}" method="POST"
                             class="d-none">
                             @csrf
                             @method('delete')

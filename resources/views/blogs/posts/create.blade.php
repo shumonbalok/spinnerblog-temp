@@ -24,12 +24,12 @@
                                 @enderror
                             </div>
                         </div>
-                        <div class="form-group @error('dscp') has-error has-feedback @enderror">
-                            <label class="control-label col-sm-2" for="dscp">Description:</label>
+                        <div class="form-group @error('description') has-error has-feedback @enderror">
+                            <label class="control-label col-sm-2" for="description">Description:</label>
                             <div class="col-sm-10">
-                                <textarea name="dscp" class="form-control"
-                                    placeholder="Enter Description">{{old('dscp')}}</textarea>
-                                @error('dscp')
+                                <textarea name="description" class="form-control"
+                                    placeholder="Enter Description">{{old('description')}}</textarea>
+                                @error('description')
                                 <span class="help-block">{{ $message }}</span>
                                 @enderror
                             </div>
@@ -38,8 +38,9 @@
                             <label class="control-label col-sm-2" for="status">Status:</label>
                             <div class="col-sm-10">
                                 <select type="text" name="status" class="form-control">
-                                    <option value="0" @if (old('status')==0) selected @endif>Pending</option>
-                                    <option value="1" @if (old('status')==1) selected @endif>Publish</option>
+                                    <option value="0" @if (old('status')==0) selected @endif>Only Me</option>
+                                    <option value="1" @if (old('status')==1) selected @endif>Public</option>
+                                    <option value="2" @if (old('status')==3) selected @endif>Just Friend</option>
                                 </select>
                                 @error('status')
                                 <span class="help-block">{{ $message }}</span>
@@ -47,7 +48,7 @@
                             </div>
                         </div>
                         <div class="form-group @error('image') has-error has-feedback @enderror">
-                            <label class="control-label col-sm-2" for="dscp">Banner Image:</label>
+                            <label class="control-label col-sm-2" for="dscp">Post Image:</label>
                             <div class="col-sm-10">
                                 <input type="file" name="image" class="form-control">
                                 @error('image')

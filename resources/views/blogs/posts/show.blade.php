@@ -20,16 +20,18 @@
 
             <div class="thumbnail">
                 <div class="caption">
+                    @if ($post->image)
                     <div class="position-relative">
-                        <img src="{{is_null($post->image) ? null : asset('storage/'. $post->image->image)}}"
-                            style="max-width: 748px;" />
+                        <img src="{{$post->banner_path()}}" style="max-width: 748px;" />
                     </div>
+                    @endif
+
                     <h4 id="thumbnail-label"><a href="{{route('posts.show',$post)}}">{{$post->title}}</a></h4>
-                    <p><img src="{{is_null($post->user->image) ? null : asset('storage/'.$post->user->image->image)}}"
-                            class="img-circle" alt="{{$post->user->name}}" style="width: 25px;">&nbsp;
+                    <p><img src="{{$post->user->profile_path()}}" class="img-circle" alt="{{$post->user->name}}"
+                            style="width: 25px;">&nbsp;
                         &nbsp;{{$post->user->name}}
                     </p>
-                    <div class="thumbnail-description smaller">{{$post->dscp}}</div>
+                    <div class="thumbnail-description smaller">{{$post->description}}</div>
                 </div>
                 @if (auth()->id() == $post->user->id)
                 <div class="caption card-footer text-center">
@@ -64,8 +66,8 @@
 
             <div class="detailBox">
                 <div class="titleBox">
-                    <label>{{$post->comments->count() > 1 ? 'Comments' :
-                        'Comment'}} ({{$post->comments->count()}})</label>
+                    <label>{{$post->comments->where('status', 1)->count() > 1 ? 'Comments' :
+                        'Comment'}} ({{$post->comments->where('status', 1)->count()}})</label>
                 </div>
                 {{-- <div class="commentBox">
 
@@ -74,21 +76,18 @@
                 </div> --}}
                 <div class="actionBox">
                     <ul class="commentList">
-                        @foreach ($post->comments as $comment)
+                        @foreach ($post->comments->where('status', 1) as $comment)
                         <li>
                             <div class="commenterImage">
-                                <img
-                                    src="{{is_null($comment->user->image) ? null : asset('storage/' . $comment->user->image->image)}}" />
+                                <img src="{{$comment->user->profile_path()}}" />
                             </div>
                             <div class="commentText">
                                 @if (!$comment->image)
                                 <p class="">{{$comment->body}}</p>
                                 @else
-                                <p class=""><img style="max-height: 150px;"
-                                        src="{{is_null($comment->user->image) ? null : asset('storage/'.$comment->user->image->image)}}" />
+                                <p class=""><img style="max-height: 150px;" src="{{$comment->image_path()}}" />
                                 </p>
                                 @endif
-
                                 <span class="date sub-text">{{$comment->created_at->diffForHumans()}}</span>
                                 <span class="date sub-text">
                                     <ul class="list-inline">
@@ -96,6 +95,8 @@
                                             document.getElementById('vote-comment-form-{{$comment->id}}').submit();"
                                                 href="#"><span class="glyphicon glyphicon-thumbs-up"></span> Like</a>
                                         </li>
+                                        <li>{{$comment->votes->count()}} {{$comment->votes->count() > 1 ? 'Likes' :
+                                            'Like'}}</li>
                                         @if (auth()->check() && auth()->id() == $comment->user_id)
                                         <li><a class="btn btn-default btn-sm"
                                                 href="{{route('comments.edit', $comment)}}"> Update</a>
@@ -111,8 +112,6 @@
                                             @method('delete')
                                         </form>
                                         @endif
-                                        <li>{{$comment->votes->count()}} {{$comment->votes->count() > 1 ? 'Likes' :
-                                            'Like'}}</li>
                                         <form id="vote-comment-form-{{$comment->id}}"
                                             action="{{route('comments.vote', $comment)}}" method="POST" class="d-none">
                                             @csrf
@@ -124,7 +123,8 @@
                         </li>
                         @endforeach
                     </ul>
-                    <form class="form-inline form" role="form" action="{{route('comments.store', $post)}}" method="POST"
+                    <form class="form-inline form" role="form"
+                        action="{{route('comments.store', ['post_id' => $post->id])}}" method="POST"
                         enctype="multipart/form-data">
                         <div class="form-group @error('body') has-error has-feedback @enderror">
                             <span class="input-group-addon" id="comment-addon" onclick="event.preventDefault();

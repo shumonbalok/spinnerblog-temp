@@ -11,17 +11,13 @@ class Post extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['user_id', 'title', 'dscp', 'status'];
+    protected $fillable = ['user_id', 'title', 'description', 'status', 'image'];
 
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    public function image()
-    {
-        return $this->morphOne(Image::class, 'imageable');
-    }
 
     public function comments()
     {
@@ -30,7 +26,8 @@ class Post extends Model
 
     public function votes()
     {
-        return $this->morphMany(Vote::class, 'voteable');
+        return $this->hasMany(PostVote::class);
+        // return $this->morphMany(Vote::class, 'voteable');
     }
 
     public function voteByuser()
@@ -40,6 +37,30 @@ class Post extends Model
 
     public function excerpt($length)
     {
-        return Str::limit(strip_tags($this->dscp), $length);
+        return Str::limit(strip_tags($this->description), $length);
+    }
+
+    public function banner_path()
+    {
+        return is_null($this->image) ? asset('images/banner_default.jpg') : asset('storage/' . $this->image);
+    }
+
+    public function scopePublish($query)
+    {
+        return $query->where('status', true);
+    }
+
+    public function scopeCurrentUserPosts($query)
+    {
+        if (auth()->id() == $this->user_id) {
+            return $query->where('user_id', auth()->id());
+        }
+    }
+
+    public function authorize()
+    {
+        if (auth()->id() != $this->user_id) {
+            abort(401, 'You can not update this post!!');
+        }
     }
 }
