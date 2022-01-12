@@ -28,6 +28,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('posts/{post}/vote', [VoteController::class, 'postVote'])->name('posts.vote');
     Route::post('comments/{comment}/vote', [VoteController::class, 'commentVote'])->name('comments.vote');
     Route::resource('friendships', FriendShipController::class);
+    Route::match(['get', 'post'], 'current_user_find_friends', [FriendShipController::class, 'current_user_find_friends'])->name('current_user_find_friends');
 });
 
 Auth::routes(['verify' => true]);

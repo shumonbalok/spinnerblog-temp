@@ -18,10 +18,19 @@
             </div>
             @endif
 
-            <div class="detailBox">
+            <div class="detailBox m-t-30">
+                <div class="btn-group btn-group-justified">
+                    <a href="{{route('friendships.index')}}"
+                        class="btn btn-default {{ Route::is('friendships.*') && ! Request::getQueryString()  ? 'active' : '' }}">Friends({{$allfriends_count}})</a>
+                    <a href="{{route('friendships.index', ['friends' => 'pending'])}}"
+                        class="btn btn-default {{ Route::is('friendships.*') && Request::query('friends') == 'pending'  ? 'active' : '' }}">Pending({{$pending_friends_count}})</a>
+                    <a href="{{route('friendships.index', ['friends' => 'requests'])}}"
+                        class="btn btn-default {{ Route::is('friendships.*') && Request::query('friends') == 'requests'  ? 'active' : '' }}">Friend
+                        Requests({{$request_friends_count}})</a>
+                </div>
                 <div class="titleBox">
-                    <label>{{$friends->count() > 1 ? 'Friends' :
-                        'Friend'}} ({{$friends->count()}})</label>
+                    {{-- <label>{{count($friends) > 1 ? 'Friends' :
+                        'Friend'}} ({{count($friends)}})</label> --}}
                 </div>
                 <div class="actionBox">
                     <ul class="commentList">
@@ -31,19 +40,31 @@
                                 <img src="{{$friend->profile_path()}}" />
                             </div>
                             <div class="commentText">
-                                <p class="">{{$friend->name}}</p>
-                                <span class="date sub-text">{{$friend->created_at->diffForHumans()}}</span>
+                                <p class="">{{$friend->name . $friend->pivot->id}}</p>
+                                <span
+                                    class="date sub-text">{{$friend->created_at->diffForHumans()}}{{$friend->pivot->id}}</span>
                                 <span class="date sub-text">
                                     <ul class="list-inline">
-                                        <li><a class="btn btn-default btn-sm"
-                                                href="{{route('friendships.edit', $friend)}}">Update</a>
+                                        @if (request()->query('friends') == 'pending')
+                                        <li><a class="btn btn-default btn-sm" href="#"
+                                                onclick="event.preventDefault();
+                                                document.getElementById('update-form-{{$friend->pivot->id}}').submit();">
+                                                {{$friend->pivot->status == 0 ? 'Confirm' : 'Friend'}}</a>
+
+                                            <form id="update-form-{{$friend->pivot->id}}"
+                                                action="{{route('friendships.update', $friend->pivot->id)}}"
+                                                method="post" class="d-none">
+                                                @csrf
+                                                @method('patch')
+                                            </form>
                                         </li>
+                                        @endif
                                         <li><a class="btn btn-danger btn-sm" onclick="event.preventDefault();
-                                            document.getElementById('update-comment-form-{{$friend->id}}').submit();"
-                                                href="#">Unfriend</a>
+                                            document.getElementById('delete-form-{{$friend->id}}').submit();"
+                                                href="#">Delete</a>
                                         </li>
-                                        <form id="update-comment-form-{{$friend->id}}"
-                                            action="{{route('friendships.destroy', $friend)}}" method="post"
+                                        <form id="delete-form-{{$friend->id}}"
+                                            action="{{route('friendships.destroy', $friend->pivot->id)}}" method="post"
                                             class="d-none">
                                             @csrf
                                             @method('delete')

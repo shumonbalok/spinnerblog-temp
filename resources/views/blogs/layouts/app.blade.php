@@ -13,164 +13,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{asset('css/style.css')}}">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-    <style>
-        .detailBox {
-            border: 1px solid #bbb;
-            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.5);
-            border-radius: 5px;
-            margin-bottom: 20px;
-        }
 
-        .titleBox {
-            background-color: #fdfdfd;
-            padding: 10px;
-        }
-
-        .titleBox label {
-            color: #444;
-            margin: 0;
-            display: inline-block;
-        }
-
-        .commentBox {
-            padding: 10px;
-            border-top: 1px dotted #bbb;
-        }
-
-        .commentBox .form-group:first-child,
-        .actionBox .form-group:first-child {
-            width: 80%;
-        }
-
-        .commentBox .form-group:nth-child(2),
-        .actionBox .form-group:nth-child(2) {
-            width: 18%;
-        }
-
-        .actionBox .form-group * {
-            width: 93%;
-            display: inline;
-            margin-left: -5px;
-        }
-
-        .input-group-addon {
-            padding: 9px 12px;
-            margin-left: 1px !important;
-        }
-
-        .taskDescription {
-            margin-top: 10px 0;
-        }
-
-        .commentList {
-            padding: 0;
-            list-style: none;
-            overflow: auto;
-        }
-
-        .commentList li {
-            margin: 0;
-            margin-top: 10px;
-        }
-
-        .commentList li>div {
-            display: table-cell;
-        }
-
-        .commenterImage {
-            width: 30px;
-            margin-right: 5px;
-            height: 100%;
-            float: left;
-        }
-
-        .commenterImage img {
-            width: 100%;
-            border-radius: 50%;
-        }
-
-        .commentText p {
-            margin: 0;
-        }
-
-        .sub-text {
-            color: #aaa;
-            font-family: verdana;
-            font-size: 11px;
-        }
-
-        .sub-text .list-inline {
-            display: inline;
-        }
-
-        .sub-text .list-inline .btn {
-            padding: 1px 5px;
-            font-size: 10px;
-        }
-
-        .actionBox {
-            border-top: 1px dotted #bbb;
-            padding: 10px;
-        }
-
-        .taxt-center {
-            text-align: center;
-        }
-
-        .thumbnail {
-            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.5);
-            transition: 0.3s;
-            min-width: 40%;
-            border-radius: 5px;
-        }
-
-        .thumbnail-description {
-            min-height: 40px;
-        }
-
-        .thumbnail:hover {
-            box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 1);
-        }
-
-        /* Remove the navbar's default margin-bottom and rounded borders */
-        .navbar {
-            margin-bottom: 0;
-            border-radius: 0;
-        }
-
-        /* Set height of the grid so .sidenav can be 100% (adjust as needed) */
-        .row.content {
-            height: 450px
-        }
-
-        /* Set gray background color and 100% height */
-        .sidenav {
-            padding-top: 20px;
-            background-color: #f1f1f1;
-            height: 100%;
-        }
-
-        /* Set black background color, white text and some padding */
-        footer {
-            background-color: #555;
-            color: white;
-            padding: 15px;
-        }
-
-        /* On small screens, set height to 'auto' for sidenav and grid */
-        @media screen and (max-width: 767px) {
-            .sidenav {
-                height: auto;
-                padding: 15px;
-            }
-
-            .row.content {
-                height: auto;
-            }
-        }
-    </style>
 </head>
 
 <body>
@@ -199,9 +45,8 @@
                     <li class="{{ Route::is('friendships.*') && ! Request::getQueryString()  ? 'active' : '' }}">
                         <a href="{{route('friendships.index')}}">My
                             Friends</a>
-                    <li
-                        class="{{ Route::is('friendships.*') && Request::query('current_user_add_friends')  ? 'active' : '' }}">
-                        <a href="{{route('friendships.index', ['current_user_add_friends' => auth()->id()])}}">Add
+                    <li class="{{ Route::is('current_user_find_friends')  ? 'active' : '' }}">
+                        <a href="{{route('current_user_find_friends', ['id' => auth()->id()])}}">Find
                             Friends</a>
                     </li>
                     @endauth
@@ -235,9 +80,9 @@
 
     @yield('content')
 
-    <footer class="container-fluid text-center">
+    {{-- <footer class="container-fluid text-center">
         <p>Footer Text</p>
-    </footer>
+    </footer> --}}
 
     <script>
         function showPassword(id) {

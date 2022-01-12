@@ -45,19 +45,19 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verified_at' => 'datetime',
     ];
 
-    public function friendshipInverse()
+    public function allFriendshipInverse()
     {
-        return $this->belongsToMany(User::class, FriendShip::class, 'user_id', 'friend_id')->withPivot('id');
+        return $this->belongsToMany(User::class, FriendShip::class, 'user_id', 'friend_id')->wherePivotNull('deleted_at')->withPivot(['id', 'status'])->withTimestamps();
     }
 
-    public function friendshipRevarse()
+    public function allFriendshipRevarse()
     {
-        return $this->belongsToMany(User::class, FriendShip::class, 'friend_id', 'user_id')->withPivot('id');
+        return $this->belongsToMany(User::class, FriendShip::class, 'friend_id', 'user_id')->wherePivotNull('deleted_at')->withPivot(['id', 'status']);
     }
 
-    public function friendships()
+    public function allFriends()
     {
-        return collect($this->friendshipInverse)->concat(collect($this->friendshipRevarse));
+        return collect(collect($this->allFriendshipInverse)->concat(collect($this->allFriendshipRevarse)));
     }
 
     public function posts()
