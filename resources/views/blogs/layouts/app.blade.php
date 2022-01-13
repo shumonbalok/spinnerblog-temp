@@ -13,6 +13,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
+    @yield('styles')
+
     <link rel="stylesheet" href="{{asset('css/style.css')}}">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
@@ -53,7 +56,8 @@
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     @auth
-                    <li><a href="#"><img src="{{auth()->user()->profile_path()}}" class="img-circle"
+                    <li><a href="{{route('profile', ['user' => auth()->id()])}}"><img
+                                src="{{auth()->user()->profile_path()}}" class="img-circle"
                                 alt="{{auth()->user()->name}}" style="width: 25px;">
                             {{auth()->user()->name}}</a>
                     </li>

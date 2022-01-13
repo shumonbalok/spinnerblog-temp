@@ -40,9 +40,10 @@
                                 <img src="{{$friend->profile_path()}}" />
                             </div>
                             <div class="commentText">
-                                <p class="">{{$friend->name . $friend->pivot->id}}</p>
-                                <span
-                                    class="date sub-text">{{$friend->created_at->diffForHumans()}}{{$friend->pivot->id}}</span>
+                                <p class=""><a class="btn-link"
+                                        href="{{route('profile', ['user' => $friend->id])}}">{{$friend->name}}</a></p>
+                                <span class="date sub-text">{{$friend->created_at->diffForHumans()}} &nbsp; &nbsp;
+                                    &nbsp;</span>
                                 <span class="date sub-text">
                                     <ul class="list-inline">
                                         @if (request()->query('friends') == 'pending')

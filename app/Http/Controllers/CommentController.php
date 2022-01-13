@@ -22,8 +22,10 @@ class CommentController extends Controller
     {
         if (request()->query('current_user_comments')) {
             auth()->id() != request()->query('current_user_comments') ? abort(401, 'You are not authorize for this action!') :
-                $comments = Comment::withoutGlobalScope('publish')->where('user_id', auth()->id())->with('post')->paginate(5)->withQueryString();
-            return view('blogs.comments.index', compact('comments'));
+                $comment_with_posts = Comment::where('user_id', auth()->id())->latest()
+                ->get()->groupBy('post.title')->all();
+            //->paginate(5)->withQueryString();
+            return view('blogs.comments.index', compact('comment_with_posts'));
         }
     }
 

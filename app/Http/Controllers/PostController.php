@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\PostRequest;
 use App\Models\Post;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
@@ -20,14 +19,18 @@ class PostController extends Controller
      */
     public function index()
     {
+        $posts = Post::query();
+        if ($user = request()->query('user')) {
+            $posts->where('user_id', $user)->with('user')->latest()->paginate(5)->withQueryString();
+        }
         if (auth()->check() && request()->query('current_user_posts')) {
             if (auth()->id() != request()->query('current_user_posts')) {
                 abort(401, 'You are not authorize for this action!');
             } else {
-                $posts = Post::where('user_id', auth()->id())->with('user')->latest()->paginate(5)->withQueryString();
+                $posts = $posts->where('user_id', auth()->id())->with('user')->latest()->paginate(5)->withQueryString();
             }
         } else {
-            $posts = Post::publish()->with('user')->latest()->paginate(5);
+            $posts = $posts->publish()->with('user')->latest()->paginate(5);
         }
         return view('blogs.posts.index', compact('posts'));
     }

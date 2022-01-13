@@ -3,6 +3,7 @@
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\FriendShipController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\VoteController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -29,6 +30,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('comments/{comment}/vote', [VoteController::class, 'commentVote'])->name('comments.vote');
     Route::resource('friendships', FriendShipController::class);
     Route::match(['get', 'post'], 'current_user_find_friends', [FriendShipController::class, 'current_user_find_friends'])->name('current_user_find_friends');
+    Route::get('profile', [UserController::class, 'index'])->name('profile');
+    Route::get('profile/{user}', [UserController::class, 'edit'])->name('profile.edit');
+    Route::patch('profile/{user}', [UserController::class, 'update'])->name('profile.update');
 });
 
 Auth::routes(['verify' => true]);

@@ -48,7 +48,7 @@
                             </div>
                         </div>
                         <div class="form-group @error('image') has-error has-feedback @enderror">
-                            <label class="control-label col-sm-2" for="dscp">Banner Image:</label>
+                            <label class="control-label col-sm-2" for="dscp">Post Image:</label>
                             <div class="col-sm-10">
                                 <img src="{{$post->banner_path()}}" alt="Image" style="width: 200px">
                                 <input type="file" name="image" class="form-control">

@@ -65,8 +65,28 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Post::class);
     }
 
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+
     public function profile_path()
     {
         return is_null($this->image) ? asset('images/profile_default.png') : asset('storage/' . $this->image);
+    }
+
+    public function authorize($id)
+    {
+        if (auth()->id() != $id) {
+            abort(401, 'You can not update this profile!!');
+        }
+    }
+
+    public function has_friends()
+    {
+        //retrive all friends data 
+        $allfriends_data = $this->allFriends();
+        $friends_id = $allfriends_data->pluck('id');
+        return $friends_id->contains(auth()->id());
     }
 }

@@ -20,18 +20,19 @@
 
             <div class="detailBox">
                 <div class="titleBox">
-                    <label>{{$comments->count() > 1 ? 'Comments' :
-                        'Comment'}} ({{$comments->count()}})</label>
+                    {{-- <label>{{$comment_with_posts->count() > 1 ? 'Comments' :
+                        'Comment'}} ({{$comment_with_posts->count()}})</label> --}}
                 </div>
-                {{-- <div class="commentBox">
-
-                    <p class="taskDescription">Lorem Ipsum is simply dummy text of the printing and typesetting
-                        industry.</p>
-                </div> --}}
                 <div class="actionBox">
+                    @foreach ($comment_with_posts as $title => $posts)
                     <ul class="commentList">
-                        @foreach ($comments as $comment)
                         <li>
+                            <h2 style="font-size: 20px; color: gray;"><a
+                                    href="{{route('posts.show', $posts[0]['post']['id'])}}"
+                                    class="btn-link">{{$title}}</a></h2>
+                        </li>
+                        @foreach ($posts as $comment)
+                        <li style="margin-left: 20px">
                             <div class="commenterImage">
                                 <img src="{{$comment->user->profile_path()}}" />
                             </div>
@@ -42,13 +43,10 @@
                                 <p class=""><img style="max-height: 150px;" src="{{$comment->image_path()}}" />
                                 </p>
                                 @endif
-                                <span class="date sub-text">{{$comment->created_at->diffForHumans()}}</span>
+                                <span class="date sub-text">{{$comment->created_at->diffForHumans()}} &nbsp; &nbsp;
+                                    &nbsp;</span>
                                 <span class="date sub-text">
                                     <ul class="list-inline">
-                                        <li><a class="btn btn-default btn-sm" onclick="event.preventDefault();
-                                            document.getElementById('vote-comment-form-{{$comment->id}}').submit();"
-                                                href="#"><span class="glyphicon glyphicon-thumbs-up"></span> Like</a>
-                                        </li>
                                         <li>{{$comment->votes->count()}} {{$comment->votes->count() > 1 ? 'Likes' :
                                             'Like'}}</li>
                                         @if (auth()->check() && auth()->id() == $comment->user_id)
@@ -78,10 +76,6 @@
                                             @method('delete')
                                         </form>
                                         @endif
-                                        <form id="vote-comment-form-{{$comment->id}}"
-                                            action="{{route('comments.vote', $comment)}}" method="POST" class="d-none">
-                                            @csrf
-                                        </form>
                                     </ul>
                                 </span>
 
@@ -89,6 +83,7 @@
                         </li>
                         @endforeach
                     </ul>
+                    @endforeach
 
                 </div>
             </div>
